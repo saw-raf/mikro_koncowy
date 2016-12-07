@@ -72,8 +72,8 @@ ldi licznik3,0
 
 ldi Zerowanie, 0xFF//tu sobie ustawiamy zera- bedziemy tym wylaczac segmenty
 ldi Seg0, zero
-ldi Seg0, zero
-ldi Seg0, zero
+ldi Seg1, zero
+ldi Seg2, zero
 ldi Seg3, zero
 jmp Wyswietlanie
 
