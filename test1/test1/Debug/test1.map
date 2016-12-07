@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.52  D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm Wed Dec 07 02:12:29 2016
+AVRASM ver. 2.1.52  D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm Wed Dec 07 03:09:39 2016
 
 
 EQU  SIGNATURE_000 0000001e
@@ -568,6 +568,11 @@ EQU  ACIaddr      00000024
 EQU  TWIaddr      00000026
 EQU  SPMRaddr     00000028
 EQU  INT_VECTORS_SIZE 0000002a
+DEF  licznik3     r27
+DEF  licznik2     r28
+DEF  licznik1     r29
+DEF  Acc          r30
+DEF  Temp         r31
 DEF  Kolumna      r22
 DEF  Zerowanie    r21
 DEF  Stos         r20
@@ -586,7 +591,25 @@ EQU  siedem       fffffff8
 EQU  osiem        ffffff80
 EQU  dziewiec     ffffff90
 CSEG Reset        00000017
-CSEG TimerOVF     00000043
-CSEG Wyswietlanie 00000027
-CSEG Opoznienie   0000003c
-CSEG L1           0000003e
+CSEG TimerOVF     0000004c
+CSEG Wyswietlanie 00000030
+CSEG Opoznienie   00000045
+CSEG L1           00000047
+CSEG IncSekundyJ  00000058
+CSEG ContinueOVF  00000052
+CSEG wartJedenJ   0000006e
+CSEG wartDwaJ     00000070
+CSEG wartTrzyJ    00000072
+CSEG wartCzteryJ  00000074
+CSEG wartPiecJ    00000076
+CSEG wartSzescJ   00000078
+CSEG wartSiedemJ  0000007a
+CSEG wartOsiemJ   0000007c
+CSEG wartDziewiecJ 0000007e
+CSEG wartDziesiecJ 00000080
+CSEG wartJedenD   00000090
+CSEG wartDwaD     00000092
+CSEG wartTrzyD    00000094
+CSEG wartCzteryD  00000096
+CSEG wartPiecD    00000098
+CSEG wartSzescD   0000009a

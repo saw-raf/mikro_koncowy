@@ -1,8 +1,13 @@
 
-AVRASM ver. 2.1.52  D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm Wed Dec 07 02:12:29 2016
+AVRASM ver. 2.1.52  D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm Wed Dec 07 03:09:39 2016
 
 [builtin](2): Including file 'C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR Assembler\Native\2.1.39.1005\avrassembler\Include\m32def.inc'
 D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm(2): Including file 'C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR Assembler\Native\2.1.39.1005\avrassembler\Include\m32def.inc'
+D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm(17): warning: Register r27 already defined by the .DEF directive
+D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm(18): warning: Register r28 already defined by the .DEF directive
+D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm(19): warning: Register r29 already defined by the .DEF directive
+D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm(20): warning: Register r30 already defined by the .DEF directive
+D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm(21): warning: Register r31 already defined by the .DEF directive
                  
                  
                  
@@ -864,8 +869,25 @@ D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_
                  
                  #endif  /* _M32DEF_INC_ */
                  
+                 //makra dla czytelnosci kodu
+                 .macro pushf
+                 		push Acc
+                 		in Acc,SREG
+                 		push Acc
+                 .endm
+                 
+                 .macro popf
+                 		pop Acc
+                 		out SREG, Acc
+                 		pop Acc
+                 .endm
                  
                  //definicje rejestrow
+                 .def licznik3 = r27
+                 .def licznik2 = r28
+                 .def licznik1 = r29
+                 .def Acc = R30
+                 .def Temp = R31
                  .def Kolumna = R22
                  .def Zerowanie = R21 
                  .def Stos = R20
@@ -892,10 +914,11 @@ D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_
                  .org 0x000 //definicje wektorow przerwan
 000000 c016      rjmp Reset
                  .org 0x016
-000016 c02c      rjmp TimerOVF
+000016 c035      rjmp TimerOVF
                  
                  
                  Reset:// przerwanie reset
+                 
 000017 e54f      ldi Stos, LOW(RAMEND)
 000018 bf4d      out SPL, Stos
 000019 e048      ldi Stos, HIGH(RAMEND)
@@ -904,56 +927,184 @@ D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_
 00001c bb5a      out DDRA, Zerowanie
 00001d ef6f      ldi Kolumna, 0xff
 00001e bb61      out DDRD, Kolumna
-00001f 9478      sei
-000020 ef5f      ldi Zerowanie, 0xFF//tu sobie ustawiamy zera- bedziemy tym wylaczac segmenty
-000021 e939      ldi Seg0, cztery
-000022 eb30      ldi Seg0, trzy
-000023 ea34      ldi Seg0, dwa
-000024 ef09      ldi Seg3, jeden
-000025 940c 0027 jmp Wyswietlanie
+                 
+00001f e0f3      ldi Temp, (1<<CS00) | (1<<CS01)//to do przerwan
+000020 bff3      out TCCR0, Temp //ustawienie preskalera na 64
+000021 e0f1      ldi Temp, 1<<TOIE0; //wlaczenie przerwania
+000022 bff9      out TIMSK, Temp
+000023 e8f3      ldi Temp, 131 //ustawienie wart poczatkowej
+000024 bff2      out TCNT0, Temp
+000025 9478      sei //wlaczenie przerwan
+000026 e0d0      ldi licznik1,0
+000027 e0c0      ldi licznik2,0
+000028 e0b0      ldi licznik3,0
+                 
+000029 ef5f      ldi Zerowanie, 0xFF//tu sobie ustawiamy zera- bedziemy tym wylaczac segmenty
+00002a ec30      ldi Seg0, zero
+00002b ec30      ldi Seg0, zero
+00002c ec30      ldi Seg0, zero
+00002d ec00      ldi Seg3, zero
+00002e 940c 0030 jmp Wyswietlanie
+                 
+                 
                  
                  Wyswietlanie: //petla glowna
                  
-000027 ef60      ldi Kolumna, 0xF0
-000028 bb62      out PORTD, Kolumna
-000029 bb3b      out PORTA, Seg0
-00002a d011      rcall Opoznienie
-00002b bb5b      out PORTA, Zerowanie
+000030 ef60      ldi Kolumna, 0xF0
+000031 bb62      out PORTD, Kolumna
+000032 bb3b      out PORTA, Seg0
+000033 d011      rcall Opoznienie
+000034 bb5b      out PORTA, Zerowanie
                  
-00002c ef61      ldi Kolumna, 0xF1
-00002d bb62      out PORTD, kolumna
-00002e bb2b      out PORTA, Seg1
-00002f d00c      rcall Opoznienie
-000030 bb5b      out PORTA, Zerowanie
+000035 ef61      ldi Kolumna, 0xF1
+000036 bb62      out PORTD, kolumna
+000037 bb2b      out PORTA, Seg1
+000038 d00c      rcall Opoznienie
+000039 bb5b      out PORTA, Zerowanie
                  
-000031 ef62      ldi Kolumna, 0xF2
-000032 bb62      out PORTD, kolumna
-000033 bb1b      out PORTA, Seg2
-000034 d007      rcall Opoznienie
-000035 bb5b      out PORTA, Zerowanie
+00003a ef62      ldi Kolumna, 0xF2
+00003b bb62      out PORTD, kolumna
+00003c bb1b      out PORTA, Seg2
+00003d d007      rcall Opoznienie
+00003e bb5b      out PORTA, Zerowanie
                  
-000036 ef63      ldi Kolumna, 0xF3
-000037 bb62      out PORTD, kolumna
-000038 bb0b      out PORTA, Seg3
-000039 d002      rcall Opoznienie
-00003a bb5b      out PORTA, Zerowanie
+00003f ef63      ldi Kolumna, 0xF3
+000040 bb62      out PORTD, kolumna
+000041 bb0b      out PORTA, Seg3
+000042 d002      rcall Opoznienie
+000043 bb5b      out PORTA, Zerowanie
                  
-00003b cfeb      rjmp Wyswietlanie //koniec Wyswietlanie
+000044 cfeb      rjmp Wyswietlanie //koniec Wyswietlanie
                  
                  
                  Opoznienie://15ms
-00003c e174      ldi  r23, 20
-00003d e78a      ldi  r24, 122
+000045 e174      ldi  r23, 20
+000046 e78a      ldi  r24, 122
                  L1: 
-00003e 958a      dec  r24
-00003f f7f1      brne L1
-000040 957a      dec  r23
-000041 f7e1      brne L1
-000042 0000      nop
+000047 958a      dec  r24
+000048 f7f1      brne L1
+000049 957a      dec  r23
+00004a f7e1      brne L1
+00004b 0000      nop
                  
                  
-                 TimerOVF:
-000043 9518      reti
+                 TimerOVF: //przerwanie czasowe
+00004c 93ef
+00004d b7ef
+00004e 93ef      pushf
+00004f 95d3      inc licznik1
+000050 37dd      cpi licznik1, 125
+000051 f031      breq IncSekundyJ
+                 ContinueOVF:
+000052 e8f3      ldi Temp, 131 //ustawienie wart poczatkowej
+000053 bff2      out TCNT0, Temp
+000054 91ef
+000055 bfef
+000056 91ef      popf
+000057 9518      reti
+                 
+                 IncSekundyJ:
+000058 e0d0      ldi licznik1,0
+000059 95c3      inc licznik2
+00005a 30c1      cpi licznik2, 1
+00005b f091      breq wartJedenJ
+00005c 30c2      cpi licznik2, 2
+00005d f091      breq wartDwaJ
+00005e 30c3      cpi licznik2, 3
+00005f f091      breq wartTrzyJ
+000060 30c4      cpi licznik2, 4
+000061 f091      breq wartCzteryJ
+000062 30c5      cpi licznik2, 5
+000063 f091      breq wartPiecJ
+000064 30c6      cpi licznik2, 6
+000065 f091      breq wartSzescJ
+000066 30c7      cpi licznik2, 7
+000067 f091      breq wartSiedemJ
+000068 30c8      cpi licznik2, 8
+000069 f091      breq wartOsiemJ
+00006a 30c9      cpi licznik2, 9
+00006b f091      breq wartDziewiecJ
+00006c 30ca      cpi licznik2, 10
+00006d f091      breq wartDziesiecJ
+                 
+                 
+                 wartJedenJ:
+00006e ef39      ldi Seg0, jeden
+00006f cfe2      rjmp ContinueOVF
+                 
+                 wartDwaJ:
+000070 ea34      ldi Seg0, dwa
+000071 cfe0      rjmp ContinueOVF
+                 
+                 wartTrzyJ:
+000072 eb30      ldi Seg0, trzy
+000073 cfde      rjmp ContinueOVF
+                 
+                 wartCzteryJ:
+000074 e939      ldi Seg0, cztery
+000075 cfdc      rjmp ContinueOVF
+                 
+                 wartPiecJ:
+000076 e932      ldi Seg0, piec
+000077 cfda      rjmp ContinueOVF
+                 
+                 wartSzescJ:
+000078 e832      ldi Seg0, szesc
+000079 cfd8      rjmp ContinueOVF
+                 
+                 wartSiedemJ:
+00007a ef38      ldi Seg0, siedem
+00007b cfd6      rjmp ContinueOVF
+                 
+                 wartOsiemJ:
+00007c e830      ldi Seg0, osiem
+00007d cfd4      rjmp ContinueOVF
+                 
+                 wartDziewiecJ:
+00007e e930      ldi Seg0, dziewiec
+00007f cfd2      rjmp ContinueOVF
+                 
+                 wartDziesiecJ:
+000080 ec30      ldi Seg0, zero
+000081 e0c0      ldi licznik2,0
+000082 95b3      inc licznik3
+000083 30b1      cpi licznik3, 1
+000084 f059      breq wartJedenD
+000085 30b2      cpi licznik3, 2
+000086 f059      breq wartDwaD
+000087 30b3      cpi licznik3, 3
+000088 f059      breq wartTrzyD
+000089 30b4      cpi licznik3, 4
+00008a f059      breq wartCzteryD
+00008b 30b5      cpi licznik3, 5
+00008c f059      breq wartPiecD
+00008d 30b6      cpi licznik3, 6
+00008e f059      breq wartSzescD
+00008f cfc2      rjmp ContinueOVF
+                 
+                 wartJedenD:
+000090 ef29      ldi Seg1, jeden
+000091 cfc0      rjmp ContinueOVF
+                 
+                 wartDwaD:
+000092 ea24      ldi Seg1, dwa
+000093 cfbe      rjmp ContinueOVF
+                 
+                 wartTrzyD:
+000094 eb20      ldi Seg1, trzy
+000095 cfbc      rjmp ContinueOVF
+                 
+                 wartCzteryD:
+000096 e929      ldi Seg1, cztery
+000097 cfba      rjmp ContinueOVF
+                 
+                 wartPiecD:
+000098 e922      ldi Seg1, piec
+000099 cfb8      rjmp ContinueOVF
+                 
+                 wartSzescD:
+00009a ec20      ldi Seg1, zero
+00009b e0b0      ldi licznik3,0
 
 
 RESOURCE USE INFORMATION
@@ -973,38 +1124,38 @@ counted separately from r26..r31 here.
 "ATmega32" register use summary:
 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 r5 :   0 r6 :   0 r7 :   0 
 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 r13:   0 r14:   0 r15:   0 
-r16:   2 r17:   1 r18:   1 r19:   4 r20:   4 r21:   7 r22:  10 r23:   2 
-r24:   2 r25:   0 r26:   0 r27:   0 r28:   0 r29:   0 r30:   0 r31:   0 
+r16:   2 r17:   1 r18:   7 r19:  14 r20:   4 r21:   7 r22:  10 r23:   2 
+r24:   2 r25:   0 r26:   0 r27:   9 r28:  13 r29:   4 r30:   6 r31:   8 
 x  :   0 y  :   0 z  :   0 
-Registers used: 9 out of 35 (25.7%)
+Registers used: 14 out of 35 (40.0%)
 
 "ATmega32" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :  17 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   2 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   0 cpse  :   0 dec   :   2 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   1 
-ld    :   0 ldd   :   0 ldi   :  15 lds   :   0 lpm   :   0 lsl   :   0 
+cpi   :  17 cpse  :   0 dec   :   2 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   1 inc   :   3 jmp   :   1 
+ld    :   0 ldd   :   0 ldi   :  41 lds   :   0 lpm   :   0 lsl   :   0 
 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :  16 pop   :   0 
-push  :   0 rcall :   4 ret   :   0 reti  :   1 rjmp  :   3 rol   :   0 
+neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :  21 pop   :   2 
+push  :   2 rcall :   4 ret   :   0 reti  :   1 rjmp  :  19 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   0 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   0 
 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 10 out of 113 (8.8%)
+Instructions used: 16 out of 113 (14.2%)
 
 "ATmega32" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000088     94      0     94   32768   0.3%
+[.cseg] 0x000000 0x00013a    272      0    272   32768   0.8%
 [.dseg] 0x000060 0x000060      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
-Assembly complete, 0 errors, 0 warnings
+Assembly complete, 0 errors, 5 warnings
