@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.52  D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm Wed Dec 07 02:06:05 2016
+AVRASM ver. 2.1.52  D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm Wed Dec 07 02:12:29 2016
 
 
 EQU  SIGNATURE_000 0000001e
@@ -586,7 +586,7 @@ EQU  siedem       fffffff8
 EQU  osiem        ffffff80
 EQU  dziewiec     ffffff90
 CSEG Reset        00000017
-CSEG TimerOVF     0000003f
-CSEG Wyswietlanie 00000023
-CSEG Opoznienie   00000038
-CSEG L1           0000003a
+CSEG TimerOVF     00000043
+CSEG Wyswietlanie 00000027
+CSEG Opoznienie   0000003c
+CSEG L1           0000003e

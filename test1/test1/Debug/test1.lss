@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.52  D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm Wed Dec 07 02:06:05 2016
+AVRASM ver. 2.1.52  D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm Wed Dec 07 02:12:29 2016
 
 [builtin](2): Including file 'C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR Assembler\Native\2.1.39.1005\avrassembler\Include\m32def.inc'
 D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_koncowy\test1\test1\test1.asm(2): Including file 'C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR Assembler\Native\2.1.39.1005\avrassembler\Include\m32def.inc'
@@ -889,10 +889,10 @@ D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_
                  
                  //programik
                  
-                 .org 0x000
+                 .org 0x000 //definicje wektorow przerwan
 000000 c016      rjmp Reset
                  .org 0x016
-000016 c028      rjmp TimerOVF
+000016 c02c      rjmp TimerOVF
                  
                  
                  Reset:// przerwanie reset
@@ -906,50 +906,54 @@ D:\studia\AIR\2_rok\1_sem_2_rok\podstawy_mikrosterownikow\projekt koncowy\mikro_
 00001e bb61      out DDRD, Kolumna
 00001f 9478      sei
 000020 ef5f      ldi Zerowanie, 0xFF//tu sobie ustawiamy zera- bedziemy tym wylaczac segmenty
-000021 940c 0023 jmp Wyswietlanie
+000021 e939      ldi Seg0, cztery
+000022 eb30      ldi Seg0, trzy
+000023 ea34      ldi Seg0, dwa
+000024 ef09      ldi Seg3, jeden
+000025 940c 0027 jmp Wyswietlanie
                  
                  Wyswietlanie: //petla glowna
                  
-000023 ef60      ldi Kolumna, 0xF0
-000024 bb62      out PORTD, Kolumna
-000025 bb3b      out PORTA, Seg0
-000026 d011      rcall Opoznienie
-000027 bb5b      out PORTA, Zerowanie
+000027 ef60      ldi Kolumna, 0xF0
+000028 bb62      out PORTD, Kolumna
+000029 bb3b      out PORTA, Seg0
+00002a d011      rcall Opoznienie
+00002b bb5b      out PORTA, Zerowanie
                  
-000028 ef61      ldi Kolumna, 0xF1
-000029 bb62      out PORTD, kolumna
-00002a bb2b      out PORTA, Seg1
-00002b d00c      rcall Opoznienie
-00002c bb5b      out PORTA, Zerowanie
+00002c ef61      ldi Kolumna, 0xF1
+00002d bb62      out PORTD, kolumna
+00002e bb2b      out PORTA, Seg1
+00002f d00c      rcall Opoznienie
+000030 bb5b      out PORTA, Zerowanie
                  
-00002d ef62      ldi Kolumna, 0xF2
-00002e bb62      out PORTD, kolumna
-00002f bb1b      out PORTA, Seg2
-000030 d007      rcall Opoznienie
-000031 bb5b      out PORTA, Zerowanie
+000031 ef62      ldi Kolumna, 0xF2
+000032 bb62      out PORTD, kolumna
+000033 bb1b      out PORTA, Seg2
+000034 d007      rcall Opoznienie
+000035 bb5b      out PORTA, Zerowanie
                  
-000032 ef63      ldi Kolumna, 0xF3
-000033 bb62      out PORTD, kolumna
-000034 bb0b      out PORTA, Seg3
-000035 d002      rcall Opoznienie
-000036 bb5b      out PORTA, Zerowanie
+000036 ef63      ldi Kolumna, 0xF3
+000037 bb62      out PORTD, kolumna
+000038 bb0b      out PORTA, Seg3
+000039 d002      rcall Opoznienie
+00003a bb5b      out PORTA, Zerowanie
                  
-000037 cfeb      rjmp Wyswietlanie //koniec Wyswietlanie
+00003b cfeb      rjmp Wyswietlanie //koniec Wyswietlanie
                  
                  
-                 Opoznienie:
-000038 e174      ldi  r23, 20
-000039 e78a      ldi  r24, 122
+                 Opoznienie://15ms
+00003c e174      ldi  r23, 20
+00003d e78a      ldi  r24, 122
                  L1: 
-00003a 958a      dec  r24
-00003b f7f1      brne L1
-00003c 957a      dec  r23
-00003d f7e1      brne L1
-00003e 0000      nop
+00003e 958a      dec  r24
+00003f f7f1      brne L1
+000040 957a      dec  r23
+000041 f7e1      brne L1
+000042 0000      nop
                  
                  
                  TimerOVF:
-00003f 9518      reti
+000043 9518      reti
 
 
 RESOURCE USE INFORMATION
@@ -969,7 +973,7 @@ counted separately from r26..r31 here.
 "ATmega32" register use summary:
 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 r5 :   0 r6 :   0 r7 :   0 
 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 r13:   0 r14:   0 r15:   0 
-r16:   1 r17:   1 r18:   1 r19:   1 r20:   4 r21:   7 r22:  10 r23:   2 
+r16:   2 r17:   1 r18:   1 r19:   4 r20:   4 r21:   7 r22:  10 r23:   2 
 r24:   2 r25:   0 r26:   0 r27:   0 r28:   0 r29:   0 r30:   0 r31:   0 
 x  :   0 y  :   0 z  :   0 
 Registers used: 9 out of 35 (25.7%)
@@ -985,7 +989,7 @@ clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
 cpi   :   0 cpse  :   0 dec   :   2 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   0 jmp   :   1 
-ld    :   0 ldd   :   0 ldi   :  11 lds   :   0 lpm   :   0 lsl   :   0 
+ld    :   0 ldd   :   0 ldi   :  15 lds   :   0 lpm   :   0 lsl   :   0 
 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :  16 pop   :   0 
 push  :   0 rcall :   4 ret   :   0 reti  :   1 rjmp  :   3 rol   :   0 
@@ -999,7 +1003,7 @@ Instructions used: 10 out of 113 (8.8%)
 "ATmega32" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000080     86      0     86   32768   0.3%
+[.cseg] 0x000000 0x000088     94      0     94   32768   0.3%
 [.dseg] 0x000060 0x000060      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

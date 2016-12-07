@@ -25,7 +25,7 @@
 
 //programik
 
-.org 0x000
+.org 0x000 //definicje wektorow przerwan
 rjmp Reset
 .org 0x016
 rjmp TimerOVF
@@ -42,6 +42,10 @@ ldi Kolumna, 0xff
 out DDRD, Kolumna
 sei
 ldi Zerowanie, 0xFF//tu sobie ustawiamy zera- bedziemy tym wylaczac segmenty
+ldi Seg0, cztery
+ldi Seg0, trzy
+ldi Seg0, dwa
+ldi Seg3, jeden
 jmp Wyswietlanie
 
 Wyswietlanie: //petla glowna
@@ -73,7 +77,7 @@ out PORTA, Zerowanie
 rjmp Wyswietlanie //koniec Wyswietlanie
 
 
-Opoznienie:
+Opoznienie://15ms
 ldi  r23, 20
 ldi  r24, 122
 L1: 
